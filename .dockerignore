@@ -1,0 +1,11 @@
+node_modules
+.git
+.mastra
+.env
+.env.*
+!.env.example
+dist
+coverage
+*.log
+Dockerfile
+.dockerignore

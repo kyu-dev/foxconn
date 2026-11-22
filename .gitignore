@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Mastra (dev server + build output)
+.mastra/
+
+# Build / tests
+dist/
+coverage/
+
+# Local data (Mastra LibSQL storage, etc.)
+*.db
+*.db-*
+
+# Secrets: only the example is versioned
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
