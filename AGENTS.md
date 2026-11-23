@@ -35,6 +35,8 @@ Dependencies point inward only: `mastra/` and `infrastructure/` may import `doma
   - `index.ts`: Mastra instance (entry point required by the CLI)
   - `workflows/`: the bug → story workflow, one file per step
   - `agents/`: judgment agents only; prompts hold no business rules
+  - `public/skills/`: agent skills (`SKILL.md`), passed to agents as `skills`; `public/` is the
+    working directory under `mastra dev` and is copied into the build
   - `classifiers/`: typed decisions on a decision model (e.g. is it a bug?); the threshold
     policy lives in `domain/`
 - Entry point for now: the `mastra dev` playground. A CLI comes later; other entry
