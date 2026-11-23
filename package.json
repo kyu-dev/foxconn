@@ -30,6 +30,7 @@
   "packageManager": "pnpm@12.21.0",
   "type": "module",
   "dependencies": {
+    "@ai-sdk/typesafe-ai": "^3.0.42",
     "@mastra/core": "^1.85.0",
     "ai-sdk-provider-claude-code": "^4.4.1",
     "ai-sdk-provider-codex-cli": "^2.4.0",

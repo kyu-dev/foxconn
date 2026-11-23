@@ -2,11 +2,11 @@
 
 Long-term goal: a software factory harness (ticket → plan → code → review → PR).
 
-**Current scope (MVP): bug → user story only.** Takes a bug report, gathers context
-(code, logs, related tickets), writes a structured user story, and waits for human
-validation before outputting it (suspend/resume). Deterministic Mastra workflow;
-LLM agents only in judgment steps (bug analysis, story writing). Nothing beyond this
-scope gets built until it runs on real bugs.
+**Current scope (MVP): bug → user story only.** Takes a bug report, checks it is really a bug
+(decision model; a human decides when unsure), gathers context (code, logs, related tickets),
+writes a structured user story, and waits for human validation before outputting it
+(suspend/resume). Deterministic Mastra workflow; LLM agents only in judgment steps (bug
+analysis, story writing). Nothing beyond this scope gets built until it runs on real bugs.
 
 ## Stack
 TypeScript (strict), Mastra, Zod, pnpm, Vitest, ESLint, Docker.
@@ -35,6 +35,8 @@ Dependencies point inward only: `mastra/` and `infrastructure/` may import `doma
   - `index.ts`: Mastra instance (entry point required by the CLI)
   - `workflows/`: the bug → story workflow, one file per step
   - `agents/`: judgment agents only; prompts hold no business rules
+  - `classifiers/`: typed decisions on a decision model (e.g. is it a bug?); the threshold
+    policy lives in `domain/`
 - Entry point for now: the `mastra dev` playground. A CLI comes later; other entry
   points (webhook…) are "Later".
 - Tests are colocated: `foo.test.ts` (unit, LLM mocked), `foo.integration.test.ts`.
@@ -49,6 +51,10 @@ factories (`createXxxAgent(model)`) that receive their model and never pick a pr
 API keys), `ollama` (`OLLAMA_BASE_URL`), `claude-code` and `codex` (local CLIs, used
 without tools). Docker: pass `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`) via
 `--env-file`, never in the image. See `.env.example`.
+
+Classifiers use a decision model, not a language model: TypeSafe AI Jev
+(`TYPESAFE_AI_API_KEY`), built by `decisionModelFromEnv` and injected like agents. Not wired in
+`index.ts` until a workflow step uses a classifier.
 
 ## Rules
 1. `pnpm check` passes before every commit.
