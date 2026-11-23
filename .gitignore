@@ -26,3 +26,6 @@ logs/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Personal task list
+/todo.md
