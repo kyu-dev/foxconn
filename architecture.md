@@ -3,25 +3,40 @@
 Light clean architecture: three layers, dependencies point inward only.
 No ports/interfaces until a second implementation (factory) actually exists.
 
-## File tree
+## Workflow (target)
 
-```
-src/
-├── domain/                     (to come) business types, Zod schemas, pure rules
-│   ├── bug-report.ts             BugReport schema
-│   └── user-story.ts             UserStory schema
-├── infrastructure/             talks to the outside world, returns domain types
-│   └── llm/
-│       ├── model-spec.ts         parses FOXCONN_MODEL ("provider/model") with Zod
-│       └── create-model.ts       ModelSpec → Mastra model; modelFromEnv() checks API keys
-└── mastra/                     application layer: composes domain + infrastructure
-    ├── index.ts                  composition root: reads process.env, builds agents
-    ├── agents/                   judgment agents only, as factories
-    │   └── assistant-agent.ts    createAssistantAgent(model)
-    └── workflows/              (to come) bug → story workflow, one file per step
-```
+```mermaid
+flowchart LR
+  user((User)) --> src["BugSource<br/>- unclear Jira US<br/>- direct intent"]
 
-Tests sit next to the code: `foo.test.ts` (unit, LLM mocked), `foo.integration.test.ts` (real LLM).
+  subgraph MVP[MVP workflow]
+    cls{{"TypeSafe AI classifier<br/>Looks like a bug?"}}
+    human1[/"Human in the loop<br/>Is it a bug?"/]
+    subgraph agentBox[Bug analysis]
+      direction TB
+      sandbox["Sandbox<br/>(docker worker)"] <--> analysis[Bug analysis agent]
+      repo[(Repo)] -- read only --> analysis
+    end
+    check{"Bug proved and<br/>reproducible?"}
+    writer[US writer agent]
+    human2[/"Human in the loop<br/>Validate the US<br/>(suspend/resume)"/]
+  end
+
+  src --> cls
+  cls -- Yes --> agentBox
+  cls -. No .-> user
+  cls -- Unsure --> human1
+  human1 -- Yes --> agentBox
+  human1 -. No .-> user
+
+  agentBox --> check
+  check -. No .-> agentBox
+  check -- Yes --> writer
+
+  writer --> human2
+  human2 -- Validated --> jira[Jira]
+  human2 -. To fix .-> writer
+```
 
 ## Dependency rule
 
@@ -50,11 +65,11 @@ model Mastra accepts, and router strings like `"openai/gpt-5"` only mean somethi
 
 - Only `src/mastra/index.ts` reads `process.env`. Everything else receives values as arguments.
 - `modelFromEnv` returns a factory: a fresh model on every call. The `claude-code`/`codex`
-  providers keep the CLI session on the model instance and resume it on the next call; one
-  shared instance would fail (`persistSession: false`) and leak context between runs.
-  Mastra owns the conversation history, not the CLI.
+providers keep the CLI session on the model instance and resume it on the next call; one
+shared instance would fail (`persistSession: false`) and leak context between runs.
+Mastra owns the conversation history, not the CLI.
 - Invalid config fails at startup, not at the first LLM call (unknown provider, empty model,
-  missing API key for `openai` / `anthropic` / `xai`).
+missing API key for `openai` / `anthropic` / `xai`).
 
 ## Adding things
 
