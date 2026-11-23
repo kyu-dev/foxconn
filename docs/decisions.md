@@ -9,3 +9,11 @@ Architecture choices already made live in [architecture.md](../architecture.md).
 - Return AI SDK models for every provider (`@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/xai`)
   instead of Mastra router strings, to stop depending on the Mastra router in `infrastructure/llm`.
   Only if leaving Mastra becomes a real option.
+- Bug source `audit` (cron audit run) next to the direct request and Jira.
+- Jira Cloud (email + API token, description in ADF). Only Data Center is supported for now.
+- `expected`, `actual`, `stepsToReproduce`, `logs` in the bug report. Free text covers them for now;
+  logs need scrubbing first (rule 7).
+- Target repo path given per bug report. It will be fixed config, read in `src/mastra/index.ts`.
+- Jira attachment content (screenshots, logs). Only metadata is read: content may hold client data
+  (rule 7) and images need a vision model.
+- Writing back to Jira (comment, update or linked story). For now the story is markdown, copied by hand.
