@@ -5,6 +5,13 @@ function modelIdOf(model: unknown): unknown {
   return typeof model === 'object' && model !== null && 'modelId' in model ? model.modelId : undefined
 }
 
+function chatUrlOf(model: unknown): unknown {
+  if (typeof model !== 'object' || model === null || !('config' in model)) return undefined
+  const { config } = model
+  if (typeof config !== 'object' || config === null || !('url' in config) || typeof config.url !== 'function') return undefined
+  return Reflect.apply(config.url, config, [{ path: '/chat' }])
+}
+
 describe('createModel', () => {
   const keys = { OPENAI_API_KEY: 'k', ANTHROPIC_API_KEY: 'k', XAI_API_KEY: 'k' }
 
@@ -17,23 +24,27 @@ describe('createModel', () => {
     expect(() => createModel({ provider, model: 'm' }, { ...keys, OPENAI_API_KEY: '', ANTHROPIC_API_KEY: '', XAI_API_KEY: '' })).toThrow(/_API_KEY is required/)
   })
 
-  it.each(['ollama', 'claude-code', 'codex'] as const)('builds an AI SDK model instance for %s', (provider) => {
-    expect(modelIdOf(createModel({ provider, model: 'some-model' }))).toBe('some-model')
+  it('builds an AI SDK model instance for ollama', () => {
+    expect(modelIdOf(createModel({ provider: 'ollama', model: 'some-model' }))).toBe('some-model')
+  })
+
+  it.each([undefined, ''])('falls back to the local Ollama server when OLLAMA_BASE_URL is %j', (url) => {
+    expect(chatUrlOf(createModel({ provider: 'ollama', model: 'm' }, { OLLAMA_BASE_URL: url }))).toBe('http://127.0.0.1:11434/api/chat')
+  })
+
+  it('uses OLLAMA_BASE_URL', () => {
+    const env = { OLLAMA_BASE_URL: 'http://host.docker.internal:11434/api' }
+    expect(chatUrlOf(createModel({ provider: 'ollama', model: 'm' }, env))).toBe('http://host.docker.internal:11434/api/chat')
   })
 })
 
 describe('modelFromEnv', () => {
-  it('defaults to Claude Code sonnet', () => {
-    expect(modelIdOf(modelFromEnv({})())).toBe('sonnet')
+  it('defaults to local Ollama Qwen', () => {
+    expect(modelIdOf(modelFromEnv({}))).toBe('qwen3.8:27b-mlx')
   })
 
   it('uses FOXCONN_MODEL', () => {
-    expect(modelFromEnv({ FOXCONN_MODEL: 'openai/gpt-5', OPENAI_API_KEY: 'k' })()).toBe('openai/gpt-5')
-  })
-
-  it('builds a fresh model on each call, so no CLI session is resumed across calls', () => {
-    const model = modelFromEnv({})
-    expect(model()).not.toBe(model())
+    expect(modelFromEnv({ FOXCONN_MODEL: 'openai/gpt-5', OPENAI_API_KEY: 'k' })).toBe('openai/gpt-5')
   })
 
   it('fails fast on an unknown provider', () => {

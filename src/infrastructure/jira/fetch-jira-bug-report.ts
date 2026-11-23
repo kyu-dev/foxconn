@@ -8,7 +8,7 @@ export interface JiraConfig {
 
 const LinkedIssueSchema = z.object({ key: z.string(), fields: z.object({ summary: z.string() }) })
 
-// Fields disabled on the instance are absent from the response; authors are dropped (rule 7)
+// Fields disabled on the instance are absent from the response; authors are dropped
 const JiraIssueSchema = z.object({
   fields: z.object({
     summary: z.string(),
@@ -25,7 +25,7 @@ const JiraIssueSchema = z.object({
 
 const FIELDS = 'summary,description,comment,attachment,issuelinks'
 
-// Wiki markup mentions ("[~jdoe]") hold usernames: they stay out of prompts (rule 7)
+// Wiki markup mentions ("[~jdoe]") hold usernames: they stay out of prompts
 const hideMentions = (text: string) => text.replace(/\[~[^\]]+\]/g, '@user')
 
 export async function fetchJiraBugReport(issueKey: string, config: JiraConfig): Promise<BugReport> {

@@ -44,13 +44,13 @@ Dependencies point inward only: `mastra/` and `infrastructure/` may import `doma
 Introduce an interface (port) only when a second implementation actually exists.
 
 ## Models
-Chosen with `FOXCONN_MODEL=provider/model` (default `claude-code/sonnet`), parsed and
+Chosen with `FOXCONN_MODEL=provider/model` (default `ollama/qwen3.8:27b-mlx`), parsed and
 validated at startup by `src/infrastructure/llm/` (`modelFromEnv`), including the API key
 the chosen provider needs. Only `src/mastra/index.ts` reads `process.env`; agents are
-factories (`createXxxAgent(model)`) that receive their model and never pick a provider. Providers: `openai`, `anthropic`, `xai` (Mastra model router,
-API keys), `ollama` (`OLLAMA_BASE_URL`), `claude-code` and `codex` (local CLIs, used
-without tools). Docker: pass `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`) via
-`--env-file`, never in the image. See `.env.example`.
+factories (`createXxxAgent(model)`) that receive their model and never pick a provider.
+Providers: `openai`, `anthropic`, `xai` (Mastra model router, API keys) and `ollama`
+(`OLLAMA_BASE_URL`). All of them run tools, so agents use Mastra tools and skills directly.
+Docker: pass API keys via `--env-file`, never in the image. See `.env.example`.
 
 Classifiers use a decision model, not a language model: TypeSafe AI Jev
 (`TYPESAFE_AI_API_KEY`), built by `decisionModelFromEnv` and injected like agents. Not wired in
@@ -63,8 +63,7 @@ Classifiers use a decision model, not a language model: TypeSafe AI Jev
 4. Plain code over agents: an agent only where a step needs judgment.
 5. No step writes or publishes anything without passing the human validation step.
 6. Every behavior change comes with a Vitest test; LLM calls are mocked in unit tests.
-7. No client code or data in fixtures, prompts or logs sent to a cloud service.
-8. Commits: one short line `<type>: <what>`, type is one of `feat`, `fix`, `refacto`,
+7. Commits: one short line `<type>: <what>`, type is one of `feat`, `fix`, `refacto`,
    `setup`, `ci`. No body unless truly needed. No AI credit (no Co-authored-by, no tool mentions).
-9. Scope is bug → user story only. New ideas go to `docs/decisions.md` under "Later".
-10. A new rule is added here only when an AI repeats a mistake.
+8. Scope is bug → user story only. New ideas go to `docs/decisions.md` under "Later".
+9. A new rule is added here only when an AI repeats a mistake.

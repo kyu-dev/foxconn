@@ -3,7 +3,7 @@ import { parseModelSpec } from './model-spec'
 
 describe('parseModelSpec', () => {
   it('splits provider and model', () => {
-    expect(parseModelSpec('claude-code/sonnet')).toEqual({ provider: 'claude-code', model: 'sonnet' })
+    expect(parseModelSpec('openai/gpt-5')).toEqual({ provider: 'openai', model: 'gpt-5' })
   })
 
   it('keeps everything after the first slash as the model', () => {

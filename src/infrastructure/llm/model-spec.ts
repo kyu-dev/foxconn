@@ -5,8 +5,6 @@ const MODEL_PROVIDERS = [
   'openai',
   'anthropic',
   'xai',
-  'claude-code',
-  'codex',
 ] as const
 
 const ModelProvider = z.enum(MODEL_PROVIDERS)
@@ -17,9 +15,9 @@ export const ModelSpec = z.object({
 })
 export type ModelSpec = z.infer<typeof ModelSpec>
 
-export const DEFAULT_MODEL = 'claude-code/sonnet'
+export const DEFAULT_MODEL = 'ollama/qwen3.8:27b-mlx'
 
-/** Parses "provider/model" (e.g. "claude-code/sonnet", "ollama/qwen3:8b"). */
+/** Parses "provider/model" (e.g. "openai/gpt-5", "ollama/qwen3:8b"). */
 export function parseModelSpec(value: string): ModelSpec {
   const slash = value.indexOf('/')
   if (slash === -1) {

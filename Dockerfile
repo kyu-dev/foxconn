@@ -30,8 +30,7 @@ FROM node:26-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Only the build output (it ships with its own node_modules,
-# including the Claude Code native binary pulled in by ai-sdk-provider-claude-code)
+# Only the build output (it ships with its own node_modules)
 COPY --from=build --chown=node:node /app/.mastra/output ./
 
 USER node

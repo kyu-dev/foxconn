@@ -8,7 +8,7 @@ export const BugSourceSchema = z.discriminatedUnion('kind', [
     kind: z.literal('jira'),
     issueKey: JiraIssueKeySchema,
     comments: z.array(z.string()),
-    // Metadata only: the content may hold client data (rule 7)
+    // Metadata only: reading the content is not built yet
     attachments: z.array(z.object({
       filename: z.string().min(1),
       mimeType: z.string().min(1),

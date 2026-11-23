@@ -64,10 +64,6 @@ model Mastra accepts, and router strings like `"openai/gpt-5"` only mean somethi
 ```
 
 - Only `src/mastra/index.ts` reads `process.env`. Everything else receives values as arguments.
-- `modelFromEnv` returns a factory: a fresh model on every call. The `claude-code`/`codex`
-providers keep the CLI session on the model instance and resume it on the next call; one
-shared instance would fail (`persistSession: false`) and leak context between runs.
-Mastra owns the conversation history, not the CLI.
 - Invalid config fails at startup, not at the first LLM call (unknown provider, empty model,
 missing API key for `openai` / `anthropic` / `xai`).
 
