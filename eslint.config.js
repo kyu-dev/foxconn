@@ -2,8 +2,11 @@
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
+// A relative import that stays in the current folder: './x' yes, './../x' no
+const LOCAL = '\\./(?!.*\\.\\.)'
+
 export default tseslint.config(
-  { ignores: ['node_modules/', '.mastra/', 'dist/', 'coverage/'] },
+  { ignores: ['node_modules/', '.mastra/', 'dist/', 'coverage/', '.claude/'] },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
@@ -27,8 +30,20 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [{
-          regex: '^(?!zod(/|$)|\\./)',
+          regex: `^(?!zod(/|$)|${LOCAL})`,
           message: 'domain/ is pure: it may only import zod and other domain/ files (./).',
+        }],
+      }],
+    },
+  },
+  {
+    // Tests are not shipped code: they may import the test runner.
+    files: ['src/domain/**/*.test.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          regex: `^(?!zod(/|$)|vitest$|${LOCAL})`,
+          message: 'domain/ tests may only import zod, vitest and domain/ files (./).',
         }],
       }],
     },
@@ -38,7 +53,7 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [{
-          regex: '^(\\.\\./)+mastra(/|$)',
+          regex: '^\\.\\.?/(.*/)?mastra(/|$)',
           message: 'infrastructure/ must not import the application layer (src/mastra/).',
         }],
       }],
