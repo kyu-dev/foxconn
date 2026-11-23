@@ -18,6 +18,8 @@ TypeScript (strict), Mastra, Zod, pnpm, Vitest, ESLint, Docker.
 - `pnpm test:unit`, `pnpm lint`, `pnpm typecheck`
 - `pnpm test:integration`: real LLM calls with the configured model (not part of `check`)
 - `docker build -t foxconn . && docker run --rm -p 4111:4111 --env-file .env foxconn`
+- Dev in a container: `docker compose up -d --build`, then `docker compose exec dev pnpm install`,
+  `docker compose exec dev pnpm dev` (Studio on http://localhost:4111). `node_modules` lives in a volume.
 
 ## Architecture
 Light clean architecture. Not hexagonal: no ports/interfaces yet.
