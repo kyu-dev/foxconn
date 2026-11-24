@@ -15,8 +15,7 @@ TypeScript (strict), Mastra, Zod, pnpm, Vitest, ESLint, Docker.
 - `pnpm install`
 - `pnpm dev`: Mastra dev server and playground (http://localhost:4111)
 - `pnpm check`: lint + typecheck + unit tests (must pass before any commit; enforced by `.githooks/pre-commit`, enabled by `pnpm install`, and by CI)
-- `pnpm test:unit`, `pnpm lint`, `pnpm typecheck`
-- `pnpm test:integration`: real LLM calls with the configured model (not part of `check`)
+- `pnpm test`, `pnpm lint`, `pnpm typecheck`
 - `docker build -t foxconn . && docker run --rm -p 4111:4111 --env-file .env foxconn`
 - Dev in a container: `docker compose up -d --build`, then `docker compose exec dev pnpm install`,
   `docker compose exec dev pnpm dev` (Studio on http://localhost:4111). `node_modules` lives in a volume.
@@ -41,7 +40,7 @@ Dependencies point inward only: `mastra/` and `infrastructure/` may import `doma
     policy lives in `domain/`
 - Entry point for now: the `mastra dev` playground. A CLI comes later; other entry
   points (webhook…) are "Later".
-- Tests are colocated: `foo.test.ts` (unit, LLM mocked), `foo.integration.test.ts`.
+- Tests are colocated: `foo.test.ts`, LLM mocked.
 
 Introduce an interface (port) only when a second implementation actually exists.
 

@@ -8,9 +8,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:unit": "vitest run --project unit",
-    "test:integration": "vitest run --project integration",
-    "check": "pnpm lint && pnpm typecheck && pnpm test:unit",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
     "prepare": "if [ -d .git ]; then git config core.hooksPath .githooks; fi"
   },
   "engines": {
