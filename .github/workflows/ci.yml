@@ -27,3 +27,5 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # Unit tests only: integration tests need a real LLM and are run locally
       - run: pnpm check
+      # The image crashes at startup if the build lacks the skills: catch it here
+      - run: pnpm build && test -f .mastra/output/skills/bug-analysis/SKILL.md
