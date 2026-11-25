@@ -1,7 +1,7 @@
 # Architecture
 
 Light clean architecture: three layers, dependencies point inward only.
-No ports/interfaces until a second implementation (factory) actually exists.
+No ports/interfaces until a second implementation actually exists.
 
 ## Workflow (target)
 

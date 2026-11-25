@@ -1,8 +1,6 @@
 # foxconn
 
-Long-term goal: a software factory harness (ticket → plan → code → review → PR).
-
-**Current scope (MVP): bug → user story only.** Takes a bug report, checks it is really a bug
+**Scope: bug → user story only.** Takes a bug report, checks it is really a bug
 (decision model; a human decides when unsure), gathers context (code, logs, related tickets),
 writes a structured user story, and waits for human validation before outputting it
 (suspend/resume). Deterministic Mastra workflow; LLM agents only in judgment steps (bug

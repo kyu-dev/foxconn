@@ -1,7 +1,7 @@
 {
   "name": "foxconn",
   "version": "1.0.0",
-  "description": "Ai agent factory",
+  "description": "Turns unclear tickets into ready-to-work tickets",
   "scripts": {
     "dev": "mastra dev",
     "build": "mastra build",
