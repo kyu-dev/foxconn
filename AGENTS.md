@@ -1,4 +1,4 @@
-# foxconn
+# moltus
 
 **Scope: bug → user story only.** Takes a bug report, checks it is really a bug
 (decision model; a human decides when unsure), gathers context (code, logs, related tickets),
@@ -14,7 +14,7 @@ TypeScript (strict), Mastra, Zod, pnpm, Vitest, ESLint, Docker.
 - `pnpm dev`: Mastra dev server and playground (http://localhost:4111)
 - `pnpm check`: lint + typecheck + unit tests (must pass before any commit; enforced by `.githooks/pre-commit`, enabled by `pnpm install`, and by CI)
 - `pnpm test`, `pnpm lint`, `pnpm typecheck`
-- `docker build -t foxconn . && docker run --rm -p 4111:4111 --env-file .env foxconn`
+- `docker build -t moltus . && docker run --rm -p 4111:4111 --env-file .env moltus`
 - Dev in a container: `docker compose up -d --build`, then `docker compose exec dev pnpm install`,
   `docker compose exec dev pnpm dev` (Studio on http://localhost:4111). `node_modules` lives in a volume.
 
@@ -43,7 +43,7 @@ Dependencies point inward only: `mastra/` and `infrastructure/` may import `doma
 Introduce an interface (port) only when a second implementation actually exists.
 
 ## Models
-Chosen with `FOXCONN_MODEL=provider/model` (default `ollama/qwen3.8:27b-mlx`), parsed and
+Chosen with `MOLTUS_MODEL=provider/model` (default `ollama/qwen3.8:27b-mlx`), parsed and
 validated at startup by `src/infrastructure/llm/` (`modelFromEnv`), including the API key
 the chosen provider needs. Only `src/mastra/index.ts` reads `process.env`; agents are
 factories (`createXxxAgent(model)`) that receive their model and never pick a provider.

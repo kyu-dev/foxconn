@@ -1,6 +1,6 @@
 services:
   dev:
-    hostname: foxconn
+    hostname: moltus
     build:
       context: .
       target: dev

@@ -10,7 +10,7 @@ export type BugClassification = z.infer<typeof BugClassificationSchema>
 // shortcut: fixed guess, tune it once human decisions on real reports are recorded
 const BUG_THRESHOLD = 0.7
 
-// Below the threshold, or on refusal, a human decides whether foxconn goes on
+// Below the threshold, or on refusal, a human decides whether moltus goes on
 export function isConfidentBug({ bugProbability }: BugClassification): boolean {
   return bugProbability !== null && bugProbability >= BUG_THRESHOLD
 }

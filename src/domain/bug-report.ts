@@ -25,7 +25,7 @@ export const BugSourceSchema = z.discriminatedUnion('kind', [
 export const BugReportSchema = z.object({
   description: z.string().trim().min(1),
   source: BugSourceSchema,
-  // When foxconn received the report, not when it was created in Jira
+  // When moltus received the report, not when it was created in Jira
   reportedAt: z.iso.datetime(),
 })
 

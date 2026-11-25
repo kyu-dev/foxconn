@@ -3,7 +3,7 @@ import { createOllama } from 'ollama-ai-provider-v2'
 import { DEFAULT_MODEL, parseModelSpec, type ModelSpec } from './model-spec'
 
 export interface ModelEnv {
-  FOXCONN_MODEL?: string
+  MOLTUS_MODEL?: string
   OLLAMA_BASE_URL?: string
   OPENAI_API_KEY?: string
   ANTHROPIC_API_KEY?: string
@@ -24,7 +24,7 @@ export function createModel(spec: ModelSpec, env: ModelEnv = {}): MastraModelCon
     case 'anthropic':
     case 'xai': {
       const key = API_KEY_BY_PROVIDER[spec.provider]
-      if (!env[key]) throw new Error(`${key} is required for FOXCONN_MODEL=${spec.provider}/${spec.model}`)
+      if (!env[key]) throw new Error(`${key} is required for MOLTUS_MODEL=${spec.provider}/${spec.model}`)
       return `${spec.provider}/${spec.model}`
     }
     case 'ollama':
@@ -33,7 +33,7 @@ export function createModel(spec: ModelSpec, env: ModelEnv = {}): MastraModelCon
   }
 }
 
-// Model chosen with FOXCONN_MODEL ("provider/model")
+// Model chosen with MOLTUS_MODEL ("provider/model")
 export function modelFromEnv(env: ModelEnv): MastraModelConfig {
-  return createModel(parseModelSpec(env.FOXCONN_MODEL ?? DEFAULT_MODEL), env)
+  return createModel(parseModelSpec(env.MOLTUS_MODEL ?? DEFAULT_MODEL), env)
 }

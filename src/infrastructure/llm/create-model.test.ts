@@ -43,15 +43,15 @@ describe('modelFromEnv', () => {
     expect(modelIdOf(modelFromEnv({}))).toBe('qwen3.8:27b-mlx')
   })
 
-  it('uses FOXCONN_MODEL', () => {
-    expect(modelFromEnv({ FOXCONN_MODEL: 'openai/gpt-5', OPENAI_API_KEY: 'k' })).toBe('openai/gpt-5')
+  it('uses MOLTUS_MODEL', () => {
+    expect(modelFromEnv({ MOLTUS_MODEL: 'openai/gpt-5', OPENAI_API_KEY: 'k' })).toBe('openai/gpt-5')
   })
 
   it('fails fast on an unknown provider', () => {
-    expect(() => modelFromEnv({ FOXCONN_MODEL: 'nope/x' })).toThrow(/Invalid model/)
+    expect(() => modelFromEnv({ MOLTUS_MODEL: 'nope/x' })).toThrow(/Invalid model/)
   })
 
   it('fails fast on a missing API key, before any call', () => {
-    expect(() => modelFromEnv({ FOXCONN_MODEL: 'openai/gpt-5' })).toThrow(/OPENAI_API_KEY is required/)
+    expect(() => modelFromEnv({ MOLTUS_MODEL: 'openai/gpt-5' })).toThrow(/OPENAI_API_KEY is required/)
   })
 })
