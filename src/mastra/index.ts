@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path'
 import { Mastra } from '@mastra/core'
 import { modelFromEnv } from '../infrastructure/llm/create-model'
 import { createBugAnalysisAgent } from './agents/bug-analysis-agent'
+import { createBugWorkflow } from './workflows/bug-workflow'
 
 // Composition root: the only place that reads process.env
 const model = modelFromEnv(process.env)
@@ -16,6 +17,9 @@ function skillDir(name: string): string {
   return dir
 }
 
+const bugAnalysisAgent = createBugAnalysisAgent(model, skillDir('bug-analysis'))
+
 export const mastra = new Mastra({
-  agents: { bugAnalysisAgent: createBugAnalysisAgent(model, skillDir('bug-analysis')) },
+  agents: { bugAnalysisAgent },
+  workflows: { bugWorkflow: createBugWorkflow(bugAnalysisAgent) },
 })
