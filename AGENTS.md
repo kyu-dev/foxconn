@@ -38,7 +38,7 @@ Dependencies point inward only: `mastra/` and `infrastructure/` may import `doma
     policy lives in `domain/`
 - Entry point for now: the `mastra dev` playground. A CLI comes later; other entry
   points (webhook…) are "Later".
-- Tests are colocated: `foo.test.ts`, LLM mocked.
+- Tests are colocated: `foo.test.ts`, no LLM in them.
 
 Introduce an interface (port) only when a second implementation actually exists.
 
@@ -60,7 +60,8 @@ Classifiers use a decision model, not a language model: TypeSafe AI Jev
 3. Every step input/output is a Zod schema in `src/domain/`.
 4. Plain code over agents: an agent only where a step needs judgment.
 5. No step writes or publishes anything without passing the human validation step.
-6. Every behavior change comes with a Vitest test; LLM calls are mocked in unit tests.
+6. Every behavior change comes with a Vitest test on plain code. No model in unit tests, mocked
+   or real (LLM or decision model): agents and classifiers are judged by evals later.
 7. Commits: one short line `<type>: <what>`, type is one of `feat`, `fix`, `refacto`,
    `setup`, `ci`. No body unless truly needed. No AI credit (no Co-authored-by, no tool mentions).
 8. Scope is bug → user story only. New ideas go to `docs/decisions.md` under "Later".
