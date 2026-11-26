@@ -17,3 +17,5 @@ Architecture choices already made live in [architecture.md](../architecture.md).
 - Writing back to Jira (comment, update or linked story). For now the story is markdown, copied by hand.
 - Evals of the judgment agents and the bug classifier (to tune its 0.7 threshold) on a small set of real bugs (Mastra datasets and scorers), instead of
   integration tests: LLM answers vary, so a test either flakes or proves nothing. Once the workflow runs.
+- Rewriting user story tickets too, not only bugs. Dropped for now: the value of moltus is proving
+  a bug in the sandbox, and an LLM rewrites a story well without it. Revisit once bugs run on real tickets.
