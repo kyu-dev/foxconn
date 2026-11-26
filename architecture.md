@@ -60,11 +60,12 @@ model Mastra accepts, and router strings like `"openai/gpt-5"` only mean somethi
 ```
 .env ──► process.env ──► mastra/index.ts ──► modelFromEnv(env) ──► createXxxAgent(model)
                           (only reader)       (validates at startup)  (receives, never reads env)
+                                         └──► decisionModelFromEnv(env) ──► createBugClassifier(model)
 ```
 
 - Only `src/mastra/index.ts` reads `process.env`. Everything else receives values as arguments.
 - Invalid config fails at startup, not at the first LLM call (unknown provider, empty model,
-missing API key for `openai` / `anthropic` / `xai`).
+missing API key for `openai` / `anthropic` / `xai`, missing `TYPESAFE_AI_API_KEY`).
 
 ## Adding things
 

@@ -38,7 +38,7 @@ Dependencies point inward only: `mastra/` and `infrastructure/` may import `doma
     policy lives in `domain/`
 - Entry point for now: the `mastra dev` playground. A CLI comes later; other entry
   points (webhook…) are "Later".
-- Tests are colocated: `foo.test.ts`, no LLM in them.
+- Tests are colocated: `foo.test.ts`, no model in them.
 
 Introduce an interface (port) only when a second implementation actually exists.
 

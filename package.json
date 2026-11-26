@@ -1,7 +1,7 @@
 {
   "name": "moltus",
   "version": "1.0.0",
-  "description": "Turns unclear tickets into ready-to-work tickets",
+  "description": "Proves reported bugs and turns them into user stories",
   "scripts": {
     "dev": "mastra dev",
     "build": "mastra build",
