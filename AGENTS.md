@@ -52,8 +52,7 @@ Providers: `openai`, `anthropic`, `xai` (Mastra model router, API keys) and `oll
 Docker: pass API keys via `--env-file`, never in the image. See `.env.example`.
 
 Classifiers use a decision model, not a language model: TypeSafe AI Jev
-(`TYPESAFE_AI_API_KEY`), built by `decisionModelFromEnv` and injected like agents. Not wired in
-`index.ts` until a workflow step uses a classifier.
+(`TYPESAFE_AI_API_KEY`), built by `decisionModelFromEnv` and injected like agents.
 
 ## Rules
 1. `pnpm check` passes before every commit.

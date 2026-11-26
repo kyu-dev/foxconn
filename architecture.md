@@ -24,8 +24,7 @@ flowchart LR
 
   src --> cls
   cls -- Yes --> agentBox
-  cls -. No .-> user
-  cls -- Unsure --> human1
+  cls -- Unsure or no --> human1
   human1 -- Yes --> agentBox
   human1 -. No .-> user
 

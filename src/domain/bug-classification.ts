@@ -14,3 +14,6 @@ const BUG_THRESHOLD = 0.7
 export function isConfidentBug({ bugProbability }: BugClassification): boolean {
   return bugProbability !== null && bugProbability >= BUG_THRESHOLD
 }
+
+// The human's answer when the classifier is not confident
+export const BugDecisionSchema = z.object({ isBug: z.boolean() })

@@ -1,12 +1,15 @@
 import { existsSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { Mastra } from '@mastra/core'
+import { decisionModelFromEnv } from '../infrastructure/llm/create-decision-model'
 import { modelFromEnv } from '../infrastructure/llm/create-model'
 import { createBugAnalysisAgent } from './agents/bug-analysis-agent'
+import { createBugClassifier } from './classifiers/bug-classifier'
 import { createBugWorkflow } from './workflows/bug-workflow'
 
 // Composition root: the only place that reads process.env
 const model = modelFromEnv(process.env)
+const decisionModel = decisionModelFromEnv(process.env)
 
 // Skills live in src/mastra/public/, the working directory under `mastra dev`, copied into
 // .mastra/output (working directory of `mastra start` and Docker) by `mastra build`
@@ -21,5 +24,5 @@ const bugAnalysisAgent = createBugAnalysisAgent(model, skillDir('bug-analysis'))
 
 export const mastra = new Mastra({
   agents: { bugAnalysisAgent },
-  workflows: { bugWorkflow: createBugWorkflow(bugAnalysisAgent) },
+  workflows: { bugWorkflow: createBugWorkflow(createBugClassifier(decisionModel), bugAnalysisAgent) },
 })
