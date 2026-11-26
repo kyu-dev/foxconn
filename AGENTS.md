@@ -1,6 +1,6 @@
 # moltus
 
-**Scope: bug → user story only.** Takes a bug report, checks it is really a bug
+**Scope: bug → user story only.** Takes a ticket reported as a bug, checks it is really a bug
 (decision model; a human decides when unsure), gathers context (code, logs, related tickets),
 writes a structured user story, and waits for human validation before outputting it
 (suspend/resume). Deterministic Mastra workflow; LLM agents only in judgment steps (bug
@@ -24,9 +24,9 @@ Light clean architecture. Not hexagonal: no ports/interfaces yet.
 Dependencies point inward only: `mastra/` and `infrastructure/` may import `domain/`;
 `domain/` imports nothing from the project or from Mastra.
 
-- `src/domain/`: business types, Zod schemas (bug report, user story) and pure rules.
+- `src/domain/`: business types, Zod schemas (ticket, user story) and pure rules.
   No I/O, no Mastra, no LLM calls.
-- `src/infrastructure/`: talking to the outside world (LLM providers, bug sources, repo, logs).
+- `src/infrastructure/`: talking to the outside world (LLM providers, ticket sources, repo, logs).
   Plain functions that return domain types.
 - `src/mastra/`: application layer. Composes domain and infrastructure.
   - `index.ts`: Mastra instance (entry point required by the CLI)

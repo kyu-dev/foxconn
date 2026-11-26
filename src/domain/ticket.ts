@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const JiraIssueKeySchema = z.string().regex(/^[A-Z][A-Z0-9_]+-\d+$/)
 
-export const BugSourceSchema = z.discriminatedUnion('kind', [
+export const TicketSourceSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('direct') }),
   z.object({
     kind: z.literal('jira'),
@@ -22,11 +22,11 @@ export const BugSourceSchema = z.discriminatedUnion('kind', [
   }),
 ])
 
-export const BugReportSchema = z.object({
+export const TicketSchema = z.object({
   description: z.string().trim().min(1),
-  source: BugSourceSchema,
+  source: TicketSourceSchema,
   // When moltus received the report, not when it was created in Jira
   reportedAt: z.iso.datetime(),
 })
 
-export type BugReport = z.infer<typeof BugReportSchema>
+export type Ticket = z.infer<typeof TicketSchema>

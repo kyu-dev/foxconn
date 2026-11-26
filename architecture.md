@@ -7,7 +7,7 @@ No ports/interfaces until a second implementation actually exists.
 
 ```mermaid
 flowchart LR
-  user((User)) --> src["BugSource<br/>- unclear Jira US<br/>- direct intent"]
+  user((User)) --> src["Ticket source<br/>- unclear Jira US<br/>- direct intent"]
 
   subgraph MVP[MVP workflow]
     cls{{"TypeSafe AI classifier<br/>Looks like a bug?"}}
@@ -73,7 +73,7 @@ missing API key for `openai` / `anthropic` / `xai`).
 Register it in `src/mastra/index.ts` with the model built there. The prompt holds no business rule.
 
 **An input source** (bug tracker, logs, repo): a plain function in `src/infrastructure/<source>/`
-that returns a domain type (e.g. `BugReport`). Its config (URL, token) is read in
+that returns a domain type (e.g. `Ticket`). Its config (URL, token) is read in
 `src/mastra/index.ts` and passed as an argument, like the model.
 
 **A workflow step**: one file in `src/mastra/workflows/`, input/output schemas in `src/domain/`.

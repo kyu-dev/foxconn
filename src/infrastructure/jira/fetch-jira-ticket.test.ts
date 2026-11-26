@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { fetchJiraBugReport } from './fetch-jira-bug-report'
+import { fetchJiraTicket } from './fetch-jira-ticket'
 
 const config = { baseUrl: 'https://jira.example.com/jira/', token: 'secret' }
 
@@ -11,10 +11,10 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe('fetchJiraBugReport', () => {
+describe('fetchJiraTicket', () => {
   it('calls the Data Center REST API with the token', async () => {
     const fetchSpy = mockFetch({ fields: { summary: 'Crash', description: null } })
-    await fetchJiraBugReport('SHOP-42', config)
+    await fetchJiraTicket('SHOP-42', config)
     expect(fetchSpy).toHaveBeenCalledWith(
       'https://jira.example.com/jira/rest/api/2/issue/SHOP-42?fields=summary,description,comment,attachment,issuelinks',
       expect.objectContaining({ headers: { Authorization: 'Bearer secret', Accept: 'application/json' } }),
@@ -23,14 +23,14 @@ describe('fetchJiraBugReport', () => {
 
   it('builds the description from summary and description', async () => {
     mockFetch({ fields: { summary: 'Crash on save', description: 'Click save, page goes blank.' } })
-    const report = await fetchJiraBugReport('SHOP-42', config)
+    const report = await fetchJiraTicket('SHOP-42', config)
     expect(report.description).toBe('Crash on save\n\nClick save, page goes blank.')
     expect(report.source).toEqual({ kind: 'jira', issueKey: 'SHOP-42', comments: [], attachments: [], linkedIssues: [] })
   })
 
   it('uses the summary alone when the description is empty', async () => {
     mockFetch({ fields: { summary: 'Crash on save', description: null } })
-    expect((await fetchJiraBugReport('SHOP-42', config)).description).toBe('Crash on save')
+    expect((await fetchJiraTicket('SHOP-42', config)).description).toBe('Crash on save')
   })
 
   it('reads comment bodies, attachment metadata and linked issues', async () => {
@@ -46,7 +46,7 @@ describe('fetchJiraBugReport', () => {
         ],
       },
     })
-    expect((await fetchJiraBugReport('SHOP-42', config)).source).toEqual({
+    expect((await fetchJiraTicket('SHOP-42', config)).source).toEqual({
       kind: 'jira',
       issueKey: 'SHOP-42',
       comments: ['Only on Safari'],
@@ -66,14 +66,14 @@ describe('fetchJiraBugReport', () => {
         comment: { comments: [{ body: '[~jane.doe] can you check?' }] },
       },
     })
-    const report = await fetchJiraBugReport('SHOP-42', config)
+    const report = await fetchJiraTicket('SHOP-42', config)
     expect(report.description).toBe('Crash\n\nSeen by @user')
     expect(report.source).toMatchObject({ comments: ['@user can you check?'] })
   })
 
   it('accepts an issue whose description field is hidden', async () => {
     mockFetch({ fields: { summary: 'Crash on save' } })
-    expect((await fetchJiraBugReport('SHOP-42', config)).description).toBe('Crash on save')
+    expect((await fetchJiraTicket('SHOP-42', config)).description).toBe('Crash on save')
   })
 
   it('drops linked issues the domain cannot represent instead of failing', async () => {
@@ -88,23 +88,23 @@ describe('fetchJiraBugReport', () => {
         ],
       },
     })
-    const { source } = await fetchJiraBugReport('SHOP-42', config)
+    const { source } = await fetchJiraTicket('SHOP-42', config)
     expect(source.kind === 'jira' && source.linkedIssues).toEqual([{ key: 'SHOP-9', summary: 'Kept', relation: 'blocks' }])
   })
 
   it('rejects an invalid issue key before calling Jira', async () => {
     const fetchSpy = mockFetch({})
-    await expect(fetchJiraBugReport('../admin', config)).rejects.toThrow()
+    await expect(fetchJiraTicket('../admin', config)).rejects.toThrow()
     expect(fetchSpy).not.toHaveBeenCalled()
   })
 
   it('fails on an HTTP error without leaking the token', async () => {
     mockFetch({ errorMessages: ['Issue does not exist'] }, 404)
-    await expect(fetchJiraBugReport('SHOP-42', config)).rejects.toThrow(/^Jira SHOP-42: HTTP 404$/)
+    await expect(fetchJiraTicket('SHOP-42', config)).rejects.toThrow(/^Jira SHOP-42: HTTP 404$/)
   })
 
   it('fails on an unexpected response shape', async () => {
     mockFetch({ fields: {} })
-    await expect(fetchJiraBugReport('SHOP-42', config)).rejects.toThrow()
+    await expect(fetchJiraTicket('SHOP-42', config)).rejects.toThrow()
   })
 })
