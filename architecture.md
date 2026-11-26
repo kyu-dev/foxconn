@@ -3,39 +3,39 @@
 Light clean architecture: three layers, dependencies point inward only.
 No ports/interfaces until a second implementation actually exists.
 
-## Workflow (target)
+## Workflow
+
+One box per workflow step, named as in `src/mastra/workflows/`. Dashed: not built yet.
 
 ```mermaid
-flowchart LR
-  user((User)) --> src["Ticket source<br/>- Jira ticket reported as a bug<br/>- direct intent"]
+flowchart TD
+  ticket["Ticket reported as a bug"]
+  classify{"classify-bug<br/>Jev: is it a bug?"}
+  human{{"Human: is it a bug?<br/>(workflow paused)"}}
+  analyze["analyze-bug<br/>the agent reads the code<br/>and tries to reproduce the bug"]
+  proved{"Bug proved?"}:::later
+  write["write-story<br/>the agent writes the user story"]:::later
+  validate{{"Human validates the story"}}:::later
+  story(["User story"]):::later
+  stop(["Stop: the ticket goes back to its author"])
 
-  subgraph MVP[MVP workflow]
-    cls{{"TypeSafe AI classifier<br/>Looks like a bug?"}}
-    human1[/"Human in the loop<br/>Is it a bug?"/]
-    subgraph agentBox[Bug analysis]
-      direction TB
-      sandbox["Sandbox<br/>(docker worker)"] <--> analysis[Bug analysis agent]
-      repo[(Repo)] -- copy of main --> sandbox
-    end
-    check{"Bug proved and<br/>reproducible?"}
-    writer[US writer agent]
-    human2[/"Human in the loop<br/>Validate the US<br/>(suspend/resume)"/]
-  end
+  ticket --> classify
+  classify -- sure --> analyze
+  classify -- not sure --> human
+  human -- yes --> analyze
+  human -- no --> stop
+  analyze --> proved
+  proved -- yes --> write
+  proved -- no --> stop
+  write --> validate
+  validate -- ok --> story
+  validate -- to fix --> write
 
-  src --> cls
-  cls -- Yes --> agentBox
-  cls -- Unsure or no --> human1
-  human1 -- Yes --> agentBox
-  human1 -. No .-> user
-
-  agentBox --> check
-  check -. No .-> human1
-  check -- Yes --> writer
-
-  writer --> human2
-  human2 -- Validated --> jira[Jira]
-  human2 -. To fix .-> writer
+  classDef later stroke-dasharray: 5 5
 ```
+
+Today the workflow ends after `analyze-bug`, and the agent has no tool yet: it analyzes the
+ticket text alone.
 
 ## Dependency rule
 
