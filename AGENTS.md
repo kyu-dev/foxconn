@@ -24,7 +24,7 @@ Light clean architecture. Not hexagonal: no ports/interfaces yet.
 Dependencies point inward only: `mastra/` and `infrastructure/` may import `domain/`;
 `domain/` imports nothing from the project or from Mastra.
 
-- `src/domain/`: business types, Zod schemas (ticket, user story) and pure rules.
+- `src/domain/`: business types, Zod schemas (ticket, bug analysis, user story) and pure rules.
   No I/O, no Mastra, no LLM calls.
 - `src/infrastructure/`: talking to the outside world (LLM providers, ticket sources, repo, logs).
   Plain functions that return domain types.

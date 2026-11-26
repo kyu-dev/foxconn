@@ -7,7 +7,7 @@ No ports/interfaces until a second implementation actually exists.
 
 ```mermaid
 flowchart LR
-  user((User)) --> src["Ticket source<br/>- unclear Jira US<br/>- direct intent"]
+  user((User)) --> src["Ticket source<br/>- Jira ticket reported as a bug<br/>- direct intent"]
 
   subgraph MVP[MVP workflow]
     cls{{"TypeSafe AI classifier<br/>Looks like a bug?"}}
@@ -15,7 +15,7 @@ flowchart LR
     subgraph agentBox[Bug analysis]
       direction TB
       sandbox["Sandbox<br/>(docker worker)"] <--> analysis[Bug analysis agent]
-      repo[(Repo)] -- read only --> analysis
+      repo[(Repo)] -- copy of main --> sandbox
     end
     check{"Bug proved and<br/>reproducible?"}
     writer[US writer agent]
@@ -30,7 +30,7 @@ flowchart LR
   human1 -. No .-> user
 
   agentBox --> check
-  check -. No .-> agentBox
+  check -. No .-> human1
   check -- Yes --> writer
 
   writer --> human2
