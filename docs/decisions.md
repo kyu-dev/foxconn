@@ -11,7 +11,7 @@ Architecture choices already made live in [architecture.md](../architecture.md).
   Only if leaving Mastra becomes a real option.
 - Bug report source `audit` (cron audit run) next to the direct request and Jira.
 - Jira Cloud (email + API token, description in ADF). Only Data Center is supported for now.
-- `expected`, `actual`, `stepsToReproduce`, `logs` in the bug report. Free text covers them for now.
+- `expected`, `actual`, `logs` in the bug report. Free text covers them for now.
 - Target repo path given per bug report. It will be fixed config, read in `src/mastra/index.ts`.
 - Jira attachment content (screenshots, logs). Only metadata is read: images need a vision model.
 - Writing back to Jira (comment, update or linked story). For now the story is markdown, copied by hand.

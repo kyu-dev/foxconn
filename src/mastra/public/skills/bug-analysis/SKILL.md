@@ -12,8 +12,8 @@ behavior that works as designed. If the code does what it was built to do, say s
 
 ## What you get
 
-- The bug report: a free-text description and its source (for Jira: comments, linked issues,
-  attachment names).
+- The bug report: a free-text description and, when the reporter gave them, steps to reproduce,
+  environment, affected versions, components, comments, linked issues and attachment names.
 - A copy of the target repository's `main` in the sandbox. It is yours: you may run, test and
   break it. The original repository is never touched.
 - A sandbox where you can run commands (install, tests, scripts, the app, screenshots).
@@ -58,5 +58,5 @@ Fill these fields, nothing else:
 - `media`: each screenshot or recording you took: its file path in the sandbox or its URL, and a
   caption saying what it shows.
 - `links`: URLs that support the analysis (docs, pipelines), copied exactly as you saw them.
-  Never build or guess a URL. Linked Jira tickets are already in the report's source: do not
+  Never build or guess a URL. Linked tickets are already in the bug report: do not
   repeat them here. Code goes in `locations`.

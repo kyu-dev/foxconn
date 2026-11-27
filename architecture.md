@@ -37,6 +37,28 @@ flowchart TD
 Today the workflow ends after `analyze-bug`, and the agent has no tool yet: it analyzes the
 bug report alone.
 
+## Schemas
+
+One schema per moment of the workflow, in `src/domain/`. A tracker's own format (Jira today)
+never leaves `src/infrastructure/<tracker>/`: it is translated at the edges.
+
+```
+Jira issue ─fetchJiraBugReport─► BugReport ─analyze-bug─► BugAnalysis ─write-story─► UserStory ─postJiraStory─► Jira story
+ (infrastructure/jira)                                                   (later)                  (later, after human validation)
+```
+
+| Schema | Answers | Written by |
+|---|---|---|
+| `BugReport` | What is reported? | the reporter, through a tracker or typed by hand |
+| `BugAnalysis` | Is it real, and why? | the analysis agent |
+| `UserStory` | What must be built? | the story agent, validated by a human |
+
+- `BugReport` is tracker-neutral. Its `source` only says where the report comes from
+  (`direct`, or `jira` + issue key): to cite it and, later, to post the story back there.
+- A new tracker: one `fetch<Tracker>BugReport` in `src/infrastructure/<tracker>/` and one `kind`
+  in `source`. Nothing else changes.
+- A tracker's custom field ids (e.g. Jira's steps to reproduce) are config, not schema.
+
 ## Dependency rule
 
 ```

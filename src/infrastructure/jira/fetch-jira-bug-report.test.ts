@@ -16,21 +16,59 @@ describe('fetchJiraBugReport', () => {
     const fetchSpy = mockFetch({ fields: { summary: 'Crash', description: null } })
     await fetchJiraBugReport('SHOP-42', config)
     expect(fetchSpy).toHaveBeenCalledWith(
-      'https://jira.example.com/jira/rest/api/2/issue/SHOP-42?fields=summary,description,comment,attachment,issuelinks',
+      'https://jira.example.com/jira/rest/api/2/issue/SHOP-42?fields=summary,description,environment,versions,components,comment,attachment,issuelinks',
       expect.objectContaining({ headers: { Authorization: 'Bearer secret', Accept: 'application/json' } }),
     )
   })
 
-  it('builds the description from summary and description', async () => {
+  it('builds the description from summary and description, and keeps only the key as source', async () => {
     mockFetch({ fields: { summary: 'Crash on save', description: 'Click save, page goes blank.' } })
     const report = await fetchJiraBugReport('SHOP-42', config)
     expect(report.description).toBe('Crash on save\n\nClick save, page goes blank.')
-    expect(report.source).toEqual({ kind: 'jira', issueKey: 'SHOP-42', comments: [], attachments: [], linkedIssues: [] })
+    expect(report.source).toEqual({ kind: 'jira', issueKey: 'SHOP-42' })
   })
 
   it('uses the summary alone when the description is empty', async () => {
     mockFetch({ fields: { summary: 'Crash on save', description: null } })
     expect((await fetchJiraBugReport('SHOP-42', config)).description).toBe('Crash on save')
+  })
+
+  it('reads environment, affected versions and components', async () => {
+    mockFetch({
+      fields: {
+        summary: 'Crash',
+        environment: 'Safari 17, macOS 14',
+        versions: [{ id: '10000', name: '1.0' }],
+        components: [{ id: '10000', name: 'Cart' }],
+      },
+    })
+    expect(await fetchJiraBugReport('SHOP-42', config)).toMatchObject({
+      environment: 'Safari 17, macOS 14',
+      affectedVersions: ['1.0'],
+      components: ['Cart'],
+    })
+  })
+
+  it('treats a blank environment as not said', async () => {
+    mockFetch({ fields: { summary: 'Crash', environment: '  ' } })
+    expect((await fetchJiraBugReport('SHOP-42', config)).environment).toBeNull()
+  })
+
+  it('reads the steps to reproduce from the configured custom field', async () => {
+    const fetchSpy = mockFetch({ fields: { summary: 'Crash', customfield_10112: '1. Add a coupon\n2. Save' } })
+    const report = await fetchJiraBugReport('SHOP-42', { ...config, stepsToReproduceField: 'customfield_10112' })
+    expect(fetchSpy.mock.calls[0]?.[0]).toMatch(/,customfield_10112$/)
+    expect(report.stepsToReproduce).toBe('1. Add a coupon\n2. Save')
+  })
+
+  it('has no steps when no custom field is configured', async () => {
+    mockFetch({ fields: { summary: 'Crash', customfield_10112: '1. Add a coupon' } })
+    expect((await fetchJiraBugReport('SHOP-42', config)).stepsToReproduce).toBeNull()
+  })
+
+  it('fails when the configured steps field is not text', async () => {
+    mockFetch({ fields: { summary: 'Crash', customfield_10112: { value: 'High' } } })
+    await expect(fetchJiraBugReport('SHOP-42', { ...config, stepsToReproduceField: 'customfield_10112' })).rejects.toThrow()
   })
 
   it('reads comment bodies, attachment metadata and linked issues', async () => {
@@ -46,9 +84,7 @@ describe('fetchJiraBugReport', () => {
         ],
       },
     })
-    expect((await fetchJiraBugReport('SHOP-42', config)).source).toEqual({
-      kind: 'jira',
-      issueKey: 'SHOP-42',
+    expect(await fetchJiraBugReport('SHOP-42', config)).toMatchObject({
       comments: ['Only on Safari'],
       attachments: [{ filename: 'screen.png', mimeType: 'image/png', size: 1024 }],
       linkedIssues: [
@@ -58,22 +94,34 @@ describe('fetchJiraBugReport', () => {
     })
   })
 
-  it('hides user mentions in the description and comments', async () => {
+  it('hides user mentions in every text it reads', async () => {
     mockFetch({
       fields: {
         summary: 'Crash',
         description: 'Seen by [~jdoe]',
+        environment: 'Laptop of [~jdoe]',
+        customfield_10112: 'Ask [~jdoe]',
         comment: { comments: [{ body: '[~jane.doe] can you check?' }] },
       },
     })
-    const report = await fetchJiraBugReport('SHOP-42', config)
-    expect(report.description).toBe('Crash\n\nSeen by @user')
-    expect(report.source).toMatchObject({ comments: ['@user can you check?'] })
+    const report = await fetchJiraBugReport('SHOP-42', { ...config, stepsToReproduceField: 'customfield_10112' })
+    expect(report).toMatchObject({
+      description: 'Crash\n\nSeen by @user',
+      environment: 'Laptop of @user',
+      stepsToReproduce: 'Ask @user',
+      comments: ['@user can you check?'],
+    })
   })
 
-  it('accepts an issue whose description field is hidden', async () => {
+  it('accepts an issue whose optional fields are hidden', async () => {
     mockFetch({ fields: { summary: 'Crash on save' } })
-    expect((await fetchJiraBugReport('SHOP-42', config)).description).toBe('Crash on save')
+    expect(await fetchJiraBugReport('SHOP-42', config)).toMatchObject({
+      description: 'Crash on save',
+      environment: null,
+      affectedVersions: [],
+      components: [],
+      comments: [],
+    })
   })
 
   it('drops linked issues the domain cannot represent instead of failing', async () => {
@@ -88,8 +136,8 @@ describe('fetchJiraBugReport', () => {
         ],
       },
     })
-    const { source } = await fetchJiraBugReport('SHOP-42', config)
-    expect(source.kind === 'jira' && source.linkedIssues).toEqual([{ key: 'SHOP-9', summary: 'Kept', relation: 'blocks' }])
+    const { linkedIssues } = await fetchJiraBugReport('SHOP-42', config)
+    expect(linkedIssues).toEqual([{ key: 'SHOP-9', summary: 'Kept', relation: 'blocks' }])
   })
 
   it('rejects an invalid issue key before calling Jira', async () => {
