@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { TicketSchema, JiraIssueKeySchema, type Ticket } from '../../domain/ticket'
+import { BugReportSchema, JiraIssueKeySchema, type BugReport } from '../../domain/bug-report'
 
 export interface JiraConfig {
   baseUrl: string
@@ -28,7 +28,7 @@ const FIELDS = 'summary,description,comment,attachment,issuelinks'
 // Wiki markup mentions ("[~jdoe]") hold usernames: they stay out of prompts
 const hideMentions = (text: string) => text.replace(/\[~[^\]]+\]/g, '@user')
 
-export async function fetchJiraTicket(issueKey: string, config: JiraConfig): Promise<Ticket> {
+export async function fetchJiraBugReport(issueKey: string, config: JiraConfig): Promise<BugReport> {
   const key = JiraIssueKeySchema.parse(issueKey) // also blocks path injection in the URL
   const url = `${config.baseUrl.replace(/\/+$/, '')}/rest/api/2/issue/${key}?fields=${FIELDS}`
   const response = await fetch(url, {
@@ -44,7 +44,7 @@ export async function fetchJiraTicket(issueKey: string, config: JiraConfig): Pro
     return []
   })
 
-  return TicketSchema.parse({
+  return BugReportSchema.parse({
     description: hideMentions(fields.description ? `${fields.summary}\n\n${fields.description}` : fields.summary),
     source: {
       kind: 'jira',

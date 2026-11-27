@@ -9,7 +9,7 @@ One box per workflow step, named as in `src/mastra/workflows/`. Dashed: not buil
 
 ```mermaid
 flowchart TD
-  ticket["Ticket reported as a bug"]
+  report["Bug report<br/>(a ticket reported as a bug)"]
   classify{"classify-bug<br/>Jev: is it a bug?"}
   human{{"Human: is it a bug?<br/>(workflow paused)"}}
   analyze["analyze-bug<br/>the agent reads the code<br/>and tries to reproduce the bug"]
@@ -19,7 +19,7 @@ flowchart TD
   story(["User story"]):::later
   stop(["Stop: the ticket goes back to its author"])
 
-  ticket --> classify
+  report --> classify
   classify -- sure --> analyze
   classify -- not sure --> human
   human -- yes --> analyze
@@ -35,7 +35,7 @@ flowchart TD
 ```
 
 Today the workflow ends after `analyze-bug`, and the agent has no tool yet: it analyzes the
-ticket text alone.
+bug report alone.
 
 ## Dependency rule
 
@@ -73,7 +73,7 @@ missing API key for `openai` / `anthropic` / `xai`, missing `TYPESAFE_AI_API_KEY
 Register it in `src/mastra/index.ts` with the model built there. The prompt holds no business rule.
 
 **An input source** (bug tracker, logs, repo): a plain function in `src/infrastructure/<source>/`
-that returns a domain type (e.g. `Ticket`). Its config (URL, token) is read in
+that returns a domain type (e.g. `BugReport`). Its config (URL, token) is read in
 `src/mastra/index.ts` and passed as an argument, like the model.
 
 **A workflow step**: one file in `src/mastra/workflows/`, input/output schemas in `src/domain/`.

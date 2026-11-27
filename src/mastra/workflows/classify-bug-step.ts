@@ -1,13 +1,13 @@
 import { createStep } from '@mastra/core/workflows'
 import { BugClassificationSchema, BugDecisionSchema, isConfidentBug } from '../../domain/bug-classification'
-import { TicketSchema } from '../../domain/ticket'
+import { BugReportSchema } from '../../domain/bug-report'
 import { type createBugClassifier, toBugClassification } from '../classifiers/bug-classifier'
 
 export function createClassifyBugStep(classifier: ReturnType<typeof createBugClassifier>) {
   return createStep({
     id: 'classify-bug',
-    inputSchema: TicketSchema,
-    outputSchema: TicketSchema,
+    inputSchema: BugReportSchema,
+    outputSchema: BugReportSchema,
     suspendSchema: BugClassificationSchema,
     resumeSchema: BugDecisionSchema,
     execute: async (context) => {

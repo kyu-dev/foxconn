@@ -3,9 +3,9 @@ import { z } from 'zod'
 const TextSchema = z.string().trim().min(1)
 
 export const BugAnalysisSchema = z.object({
-  // What actually happens, checked against the code, not the ticket's wording
+  // What actually happens, checked against the code, not the report's wording
   summary: TextSchema,
-  // null when the ticket does not say and the code does not tell
+  // null when the report does not say and the code does not tell
   expected: TextSchema.nullable(),
   actual: TextSchema.nullable(),
   // "path/to/file.ts:42"
