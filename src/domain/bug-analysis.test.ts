@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BugAnalysisSchema } from './bug-analysis'
+import { BugAnalysisSchema, BugWorkflowOutputSchema } from './bug-analysis'
 
 const bug = {
   summary: 'Saving a cart with an expired coupon throws and shows a blank page',
@@ -11,6 +11,13 @@ const bug = {
   media: [{ source: '/sandbox/screenshots/cart.png', caption: 'Blank page after Save' }],
   links: ['https://jira.example.com/browse/SHOP-41'],
 }
+
+describe('BugWorkflowOutputSchema', () => {
+  it('is null when a human stopped the run, an analysis otherwise', () => {
+    expect(BugWorkflowOutputSchema.parse(null)).toBeNull()
+    expect(BugWorkflowOutputSchema.parse(bug)).toEqual(bug)
+  })
+})
 
 describe('BugAnalysisSchema', () => {
   it('accepts a reproduced bug', () => {

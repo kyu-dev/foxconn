@@ -12,8 +12,8 @@ export function createClassifyBugStep(classifier: ReturnType<typeof createBugCla
     resumeSchema: BugDecisionSchema,
     execute: async (context) => {
       const { inputData, resumeData } = context
-      // Resumed: a human decided. Not a bug ends the run without analysis
-      if (resumeData) return resumeData.isBug ? inputData : context.bail(inputData)
+      // Resumed: a human decided. Not a bug ends the run with a null result, without analysis
+      if (resumeData) return resumeData.isBug ? inputData : context.bail(null)
       const classification = toBugClassification((await classifier.decide({ state: inputData })).answers)
       return isConfidentBug(classification) ? inputData : context.suspend(classification)
     },

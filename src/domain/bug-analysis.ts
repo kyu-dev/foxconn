@@ -19,3 +19,6 @@ export const BugAnalysisSchema = z.object({
 })
 
 export type BugAnalysis = z.infer<typeof BugAnalysisSchema>
+
+// The workflow's result: null when a human said the report is not a bug
+export const BugWorkflowOutputSchema = BugAnalysisSchema.nullable()
