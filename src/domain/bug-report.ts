@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { TextSchema } from './text'
 
 export const JiraIssueKeySchema = z.string().regex(/^[A-Z][A-Z0-9_]+-\d+$/)
 
@@ -23,7 +24,7 @@ export const BugReportSourceSchema = z.discriminatedUnion('kind', [
 ])
 
 export const BugReportSchema = z.object({
-  description: z.string().trim().min(1),
+  description: TextSchema,
   source: BugReportSourceSchema,
   // When moltus received the report, not when it was created in Jira
   reportedAt: z.iso.datetime(),

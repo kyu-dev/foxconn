@@ -1,6 +1,5 @@
 import { z } from 'zod'
-
-const TextSchema = z.string().trim().min(1)
+import { TextSchema } from './text'
 
 export const BugAnalysisSchema = z.object({
   // What actually happens, checked against the code, not the report's wording

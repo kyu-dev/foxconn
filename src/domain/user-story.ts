@@ -1,6 +1,5 @@
 import { z } from 'zod'
-
-const TextSchema = z.string().trim().min(1)
+import { TextSchema } from './text'
 
 export const UserStorySchema = z.object({
   title: TextSchema,
